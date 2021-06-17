@@ -9,7 +9,7 @@ jobs:
   - task: SonarCloudPrepare@1
     inputs:
       SonarCloud: 'SonarCloud'
-      organization: 'amelie-renard-sonarsource'
+      organization: 'amelierenard-1'
       scannerMode: 'CLI'
       configMode: 'file'
   - bash: |
