@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.9)
-project(sonar_scanner_example)
+project(SC-Azure-Linux)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(sonar_scanner_example src/main.cpp)
+add_executable(SC-Azure-Linux src/main.cpp)
