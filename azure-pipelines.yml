@@ -1,27 +1,24 @@
 jobs:
-- job: BuildLinuxWithSonarCloud
-  displayName: Build for Linux\CMake With SonarCloud
+- job: BuildWindowsWithSonarCloud
+  displayName: Build for Windows\MSBuild With SonarCloud
   pool:
-    vmImage: 'ubuntu-latest'
+    vmImage: 'windows-latest'
   variables:
-    BUILD_WRAPPER_DOWNLOAD_URL: https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
+    BUILD_WRAPPER_DOWNLOAD_URL: https://sonarcloud.io/static/cpp/build-wrapper-win-x86.zip
   steps:
   - task: SonarCloudPrepare@1
     inputs:
-      SonarCloud: 'SonarCloud'
+      SonarCloud: 'SonarCloud' # Name of the SonarCloud service connection you created
       organization: 'amelierenard-1'
       scannerMode: 'CLI'
       configMode: 'file'
-  - bash: |
-      mkdir -p $HOME/.sonar
-      curl -sSLo $HOME/.sonar/build-wrapper-linux-x86.zip ${{variables.BUILD_WRAPPER_DOWNLOAD_URL}}
-      unzip -o $HOME/.sonar/build-wrapper-linux-x86.zip -d $HOME/.sonar/
+  - pwsh: |
+      curl --create-dirs -sSLo $HOME\.sonar\build-wrapper-win-x86.zip ${{variables.BUILD_WRAPPER_DOWNLOAD_URL}}
+      unzip -o $HOME\.sonar\build-wrapper-win-x86.zip -d $HOME\.sonar\
     displayName: Download and install build wrapper
-  - bash: |
-      mkdir build
-      cmake -S . -B build
-      export PATH=$HOME/.sonar/build-wrapper-linux-x86:$PATH
-      build-wrapper-linux-x86-64 --out-dir build_wrapper_output_directory cmake --build build/ --config Release
+  - pwsh: |
+      $path = vswhere -latest -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe | select-object -first 1
+      & "$HOME\.sonar\build-wrapper-win-x86\build-wrapper-win-x86-64.exe" --out-dir build_wrapper_output_directory $path sonar_scanner_example.vcxproj /t:rebuild
     workingDirectory: .
     displayName: Build in build-wrapper
   - task: SonarCloudAnalyze@1
